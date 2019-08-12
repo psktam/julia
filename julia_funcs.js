@@ -11,7 +11,7 @@ julia.escape_time = function (z, c, num_iters){
 
         z = add(mul(z, z), c);
     }
-    return -1;  // If we hit here, we haven't excaped yet, so return -1.
+    return -100;  // If we hit here, we haven't excaped yet, so return -1.
 };
 
 

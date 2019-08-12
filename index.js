@@ -93,6 +93,12 @@ JULIA_PLOT_DIV.on('plotly_relayout',
     });
 
 
+JULIA_PLOT_DIV.on('plotly_click',
+function(eventdata){
+    console.log(eventdata);
+});
+
+
 MANDELPLOT_DIV.on('plotly_relayout', 
     function(eventdata){
         // First do some filtering to see if we need to redraw the plot
