@@ -8,22 +8,41 @@
         <script src="./stateful_plots.js"></script>
         <script src="./julia_funcs.js"></script>
         <script src="./mandelbrot.js"></script>
+
+        <link rel="stylesheet" href="./pure-min.css">
     </head>
     <body>
-        <div id="julia_plot_div" style="width:800px;height:800px;float:left;"></div>
-        <div id="mandelplot_div" style="width:800px;height:800px;float:left;"></div>
 
-        <input type="number" id="real_arg" 
-               onchange="c_change_cb()"
-               value=0.33
-               step=0.01>
-        <input type="number" id="imag_arg" 
-               onchange="c_change_cb()"
-               value=0.5
-               step=0.01>
-        <input type="number" id="num_iters" 
-               onchange="c_change_cb()"
-               value=500>
+        <div class="pure-g">
+            <div class="pure-u-1-2 pure-u-md-1-2" id="julia_plot_container">
+                <div id="julia_plot_div" style="height:900px"></div>
+            </div>
+            <div class="pure-u-1-2 pure-u-md-1-2" id="mandelplot_container">
+                <div id="mandelplot_div" style="height:900px"></div>
+            </div>
+
+            <div class="content pure-u-1">
+                <form class="pure-form">
+                    <fieldset>
+                        <legend>Parameters</legend>
+                        <input type="number" id="real_arg" 
+                            onchange="c_change_cb()"
+                            value=0.33
+                            step=0.01>
+                        <input type="number" id="imag_arg" 
+                            onchange="c_change_cb()"
+                            value=0.5
+                            step=0.01>
+                        <input type="number" id="num_iters" 
+                            onchange="c_change_cb()"
+                            value=500>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        
+        
+        
         <script src="./index.js"></script>
     </body>
 </html>

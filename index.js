@@ -9,6 +9,10 @@ const DEFAULT_Y = range(-2.5, 2.5, 0.01);
 const julia_plot_tracker = new StatefulPlot(JULIA_PLOT_DIV);
 const mandelplot_tracker = new StatefulPlot(MANDELPLOT_DIV);
 
+// Ugly hack to make the "click" event in plotly actually work in a 
+// useful manner.
+var updating_mandel = false;
+
 
 function gen_structure(xs, ys, escape_times){
     // Kind of like a constructor that generates an empty DATA
@@ -18,7 +22,7 @@ function gen_structure(xs, ys, escape_times){
         y: xs,
         z: escape_times,
 
-        type: 'heatmapgl', 
+        type: 'heatmap', 
         colorscale: 'Jet',
     };
 }
@@ -57,7 +61,7 @@ function on_c_change(c){
     var num_iters = parseInt(NUM_ITERS_INPUT.value);
 
     var z_vals = gen_z_vals(DEFAULT_X, DEFAULT_Y);
-    var escape_times = calc_julia_times(z_vals, c, num_iters);
+    var escape_times = julia.calc_escape_times(z_vals, c, num_iters);
 
     return [gen_structure(xs=DEFAULT_X, ys=DEFAULT_Y, escape_times=escape_times), 
             gen_layout(xs=DEFAULT_X, ys=DEFAULT_Y)];
@@ -79,24 +83,19 @@ function c_change_cb(){
 JULIA_PLOT_DIV.on('plotly_relayout',
     function(eventdata){
         // First do some filtering to see if we need to redraw the plot
-        if ((eventdata['xaxis.range'] === undefined) || (eventdata['yaxis.range'] === undefined)){
+        console.log(eventdata);
+        if ((eventdata['xaxis.range[0]'] === undefined)){
             return;
         }
-
         var new_plot_cfg = on_scale_change(
-            eventdata['yaxis.range'], eventdata['xaxis.range'], function(zs){
+            [eventdata['yaxis.range[0]'], eventdata['yaxis.range[1]']], 
+            [eventdata['xaxis.range[0]'], eventdata['xaxis.range[1]']], function(zs){
                 var c = new CPX(parseFloat(C_REAL_INPUT.value), parseFloat(C_IMAG_INPUT.value));
                 var num_iters = parseInt(NUM_ITERS_INPUT.value);
                 return julia.calc_escape_times(zs, c, num_iters); });
-
+        console.log(new_plot_cfg);
         julia_plot_tracker.add_step(new_plot_cfg[0], new_plot_cfg[1]);
     });
-
-
-JULIA_PLOT_DIV.on('plotly_click',
-function(eventdata){
-    console.log(eventdata);
-});
 
 
 MANDELPLOT_DIV.on('plotly_relayout', 
@@ -106,6 +105,7 @@ MANDELPLOT_DIV.on('plotly_relayout',
             return;
         }
 
+        updating_mandel = true;
         // Create escape_time_generator here
         var new_plot_cfg = on_scale_change(
             eventdata['yaxis.range'], eventdata['xaxis.range'], function(zs){
@@ -113,7 +113,26 @@ MANDELPLOT_DIV.on('plotly_relayout',
                 return mandelbrot.calc_escape_times(zs, num_iters); });
 
         mandelplot_tracker.add_step(new_plot_cfg[0], new_plot_cfg[1]);
-    });
+});
+
+
+MANDELPLOT_DIV.on('plotly_click',
+function(eventdata){
+    if (updating_mandel){
+        updating_mandel = false;
+        return;
+    }
+    console.log(eventdata);
+    var selected_real = eventdata.points[0].y;
+    var selected_imag = eventdata.points[0].x;
+
+    C_REAL_INPUT.value = selected_real;
+    C_IMAG_INPUT.value = selected_imag;
+
+    var c = new CPX(selected_real, selected_imag);
+    var new_plot_cfg = on_c_change(c);
+    julia_plot_tracker.add_step(new_plot_cfg[0], new_plot_cfg[1]);
+});
 
 
 // Initializastion and creation of plots

@@ -23,7 +23,7 @@ class StatefulPlot{
         // Method to render the plot, as it is now
         var plot_data = this.current_config[0];
         var plot_layout = this.current_config[1];
-        Plotly.react(this.plot_div, [plot_data], plot_layout);
+        Plotly.react(this.plot_div, [plot_data], plot_layout, {scrollZoom: true, responsive: true});
     }
 
     add_step(plot_data, plot_layout){
