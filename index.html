@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Julia Sets</title>
+        <script src="./plotly-latest.min.js"></script>
+        <script src="./utils.js"></script>
+        <script src="./complex.js"></script>
+        <script src="./stateful_plots.js"></script>
+        <script src="./julia_funcs.js"></script>
+        <script src="./mandelbrot.js"></script>
+    </head>
+    <body>
+        <div id="julia_plot_div" style="width:1080px;height:1080px;"></div>
+        <div id="mandelplot_div" style="width:1080px;height:1080px;"></div>
+
+        <input type="number" id="real_arg" 
+               onchange="c_change_cb()"
+               value=0.33
+               step=0.01>
+        <input type="number" id="imag_arg" 
+               onchange="c_change_cb()"
+               value=0.5
+               step=0.01>
+        <input type="number" id="num_iters" 
+               onchange="c_change_cb()"
+               value=500>
+        <script src="./index.js"></script>
+    </body>
+</html>
