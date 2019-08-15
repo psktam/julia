@@ -45,7 +45,7 @@ const NUM_ITERS_INPUT = document.getElementById('num_iters');
 
 function on_scale_change(x_lims, y_lims, escape_time_generator){
     // When the x and y limits change, refresh plot data
-    var res = (parseFloat(x_lims[1]) - parseFloat(x_lims[0])) / 500.0;
+    var res = (parseFloat(x_lims[1]) - parseFloat(x_lims[0])) / 750.0;
     var grid_x = range(parseFloat(x_lims[0]), parseFloat(x_lims[1]), res);
     var grid_y = range(parseFloat(y_lims[0]), parseFloat(y_lims[1]), res);
     var z_vals = gen_z_vals(grid_x, grid_y);
@@ -71,11 +71,10 @@ function on_c_change(c){
 function c_change_cb(){
     var c = new CPX(parseFloat(C_REAL_INPUT.value), parseFloat(C_IMAG_INPUT.value));
     var new_cfg = on_c_change(c);
-    var layout = gen_layout(xs=DEFAULT_X, ys=DEFAULT_Y);
 
     // Wipe julia plotting history
     julia_plot_tracker.wipe_history();
-    julia_plot_tracker.add_step(new_cfg, layout);
+    julia_plot_tracker.add_step(new_cfg[0], new_cfg[1]);
 }
 
 
@@ -83,7 +82,6 @@ function c_change_cb(){
 JULIA_PLOT_DIV.on('plotly_relayout',
     function(eventdata){
         // First do some filtering to see if we need to redraw the plot
-        console.log(eventdata);
         if ((eventdata['xaxis.range[0]'] === undefined)){
             return;
         }
@@ -93,7 +91,6 @@ JULIA_PLOT_DIV.on('plotly_relayout',
                 var c = new CPX(parseFloat(C_REAL_INPUT.value), parseFloat(C_IMAG_INPUT.value));
                 var num_iters = parseInt(NUM_ITERS_INPUT.value);
                 return julia.calc_escape_times(zs, c, num_iters); });
-        console.log(new_plot_cfg);
         julia_plot_tracker.add_step(new_plot_cfg[0], new_plot_cfg[1]);
     });
 
@@ -101,14 +98,14 @@ JULIA_PLOT_DIV.on('plotly_relayout',
 MANDELPLOT_DIV.on('plotly_relayout', 
     function(eventdata){
         // First do some filtering to see if we need to redraw the plot
-        if ((eventdata['xaxis.range'] === undefined) || (eventdata['yaxis.range'] === undefined)){
+        if ((eventdata['xaxis.range[0]'] === undefined)){
             return;
         }
-
         updating_mandel = true;
         // Create escape_time_generator here
         var new_plot_cfg = on_scale_change(
-            eventdata['yaxis.range'], eventdata['xaxis.range'], function(zs){
+            [eventdata['yaxis.range[0]'], eventdata['yaxis.range[1]']], 
+            [eventdata['xaxis.range[0]'], eventdata['xaxis.range[1]']], function(zs){
                 var num_iters = parseInt(NUM_ITERS_INPUT.value);
                 return mandelbrot.calc_escape_times(zs, num_iters); });
 
@@ -122,7 +119,6 @@ function(eventdata){
         updating_mandel = false;
         return;
     }
-    console.log(eventdata);
     var selected_real = eventdata.points[0].y;
     var selected_imag = eventdata.points[0].x;
 
@@ -131,6 +127,7 @@ function(eventdata){
 
     var c = new CPX(selected_real, selected_imag);
     var new_plot_cfg = on_c_change(c);
+    julia_plot_tracker.wipe_history();
     julia_plot_tracker.add_step(new_plot_cfg[0], new_plot_cfg[1]);
 });
 
