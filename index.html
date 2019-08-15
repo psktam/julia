@@ -47,10 +47,11 @@
                     onclick="julia_plot_tracker.go_to(julia_plot_tracker.plot_history.length - 1);">&gt;|</button>
             </div>
             <div class="pure-u-1-2" style="text-align:center;">
-                <button class="pure-button">|&lt;</button>
-                <button class="pure-button">&lt;</button>
-                <button class="pure-button">&gt;</button>
-                <button class="pure-button">&gt;|</button>
+                <button class="pure-button" onclick="mandelplot_tracker.go_to(0);">|&lt;</button>
+                <button class="pure-button" onclick="mandelplot_tracker.go_back();">&lt;</button>
+                <button class="pure-button" onclick="mandelplot_tracker.go_forward();">&gt;</button>
+                <button class="pure-button" 
+                    onclick="mandelplot_tracker.go_to(mandelplot_tracker.plot_history.length - 1);">&gt;|</button>
             </div>
         </div>
         
