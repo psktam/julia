@@ -12,44 +12,50 @@
         <link rel="stylesheet" href="./pure-min.css">
     </head>
     <body>
-
         <div class="pure-g">
-            <div class="content pure-u-1" style="padding-left:10px;">
+            <div class="content pure-u-1-1" style="padding-left:10px;">
                 <form class="pure-form">
                     <fieldset>
-                        <legend>Parameters</legend>
+                        <legend><h1>Julia Set Explorer</h1></legend>
+                        <label for="real_arg">C = </label>
                         <input type="number" id="real_arg" 
                             onchange="c_change_cb()"
                             value=0.33
-                            step=0.01>
+                            step=0.01
+                            style="min-width: 75px;">
+                        <label for="imag_arg"> + i</label>
                         <input type="number" id="imag_arg" 
                             onchange="c_change_cb()"
                             value=0.5
-                            step=0.01>
+                            step=0.01
+                            style="min-width: 75px;">
+                        <label for="num_iters">Escape-time iterations</label>
                         <input type="number" id="num_iters" 
                             onchange="c_change_cb()"
-                            value=500>
+                            value=500
+                            style="min-width: 75px;">
                     </fieldset>
                 </form>
             </div>
 
-            <div class="pure-u-1-2 pure-u-md-1-2" id="julia_plot_container">
-                <div id="julia_plot_div" style="min-height:900px;height:85vh;"></div>
-            </div>
             <div class="pure-u-1-2 pure-u-md-1-2" id="mandelplot_container">
-                <div id="mandelplot_div" style="min-height:900px;height:85vh;"></div>
+                <div id="mandelplot_div" style="min-height:800px;height:75vh;"></div>
+            </div>
+            <div class="pure-u-1-2 pure-u-md-1-2" id="julia_plot_container">
+                <div id="julia_plot_div" style="min-height:800px;height:75vh;"></div>
+            </div>
+            
+            <div class="pure-u-1-2" style="text-align:center;">
+                <button class="pure-button" id="mandel_reset">|&lt;</button>
+                <button class="pure-button" id="mandel_undo">&lt;</button>
+                <button class="pure-button" id="mandel_redo">&gt;</button>
+                <button class="pure-button" id="mandel_restore">&gt;|</button>
             </div>
             <div class="pure-u-1-2" style="text-align:center;">
                 <button class="pure-button" id="julia_reset">|&lt;</button>
                 <button class="pure-button" id="julia_undo">&lt;</button>
                 <button class="pure-button" id="julia_redo">&gt;</button>
                 <button class="pure-button" id="julia_restore">&gt;|</button>
-            </div>
-            <div class="pure-u-1-2" style="text-align:center;">
-                <button class="pure-button" id="mandel_reset">|&lt;</button>
-                <button class="pure-button" id="mandel_undo">&lt;</button>
-                <button class="pure-button" id="mandel_redo">&gt;</button>
-                <button class="pure-button" id="mandel_restore">&gt;|</button>
             </div>
         </div>
         
