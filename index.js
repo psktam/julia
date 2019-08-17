@@ -75,10 +75,16 @@ function c_change_cb(){
     // Wipe julia plotting history
     julia_plot_tracker.wipe_history();
     julia_plot_tracker.add_step(new_cfg[0], new_cfg[1]);
+    set_button_colors(
+        julia_plot_tracker, 
+        document.getElementById("julia_reset"), 
+        document.getElementById("julia_undo"),
+        document.getElementById("julia_redo"),
+        document.getElementById("julia_restore"));
 }
 
 
-// Bind to zooms to update the grid
+// Bind GUI elements
 JULIA_PLOT_DIV.on('plotly_relayout',
     function(eventdata){
         // First do some filtering to see if we need to redraw the plot
@@ -92,7 +98,84 @@ JULIA_PLOT_DIV.on('plotly_relayout',
                 var num_iters = parseInt(NUM_ITERS_INPUT.value);
                 return julia.calc_escape_times(zs, c, num_iters); });
         julia_plot_tracker.add_step(new_plot_cfg[0], new_plot_cfg[1]);
+        set_button_colors(
+            julia_plot_tracker, 
+            document.getElementById("julia_reset"), 
+            document.getElementById("julia_undo"),
+            document.getElementById("julia_redo"),
+            document.getElementById("julia_restore"));
     });
+
+
+function set_button_colors(plot_tracker, reset_button, undo_button, redo_button, restore_button){
+    // Use the plot tracker to determine what colors the button should be
+    if (plot_tracker.plot_idx <= 0){
+        reset_button.classList.add("pure-button-disabled");
+        reset_button.classList.remove("pure-button-primary")
+
+        undo_button.classList.add("pure-button-disabled");
+        undo_button.classList.remove("button-secondary");
+    }
+    if (plot_tracker.plot_idx === (plot_tracker.plot_history.length - 1)){
+        redo_button.classList.add("pure-button-disabled");
+        redo_button.classList.remove("button-secondary");
+
+        restore_button.classList.add("pure-button-disabled");
+        restore_button.classList.remove("pure-button-primary");
+    }
+    if (plot_tracker.plot_idx > 0){
+        reset_button.classList.add("pure-button-primary");
+        reset_button.classList.remove("pure-button-disabled");
+
+        undo_button.classList.add("button-secondary");
+        undo_button.classList.remove("pure-button-disabled");
+    }
+    if (plot_tracker.plot_idx < (plot_tracker.plot_history.length - 1)){
+        redo_button.classList.add("button-secondary");
+        redo_button.classList.remove("pure-button-disabled");
+
+        restore_button.classList.add("pure-button-primary");
+        restore_button.classList.remove("pure-button-disabled");
+    }
+};
+
+
+document.getElementById("julia_reset").onclick = function(){
+    julia_plot_tracker.go_to(0);
+    set_button_colors(
+        julia_plot_tracker, 
+        document.getElementById("julia_reset"), 
+        document.getElementById("julia_undo"),
+        document.getElementById("julia_redo"),
+        document.getElementById("julia_restore"));
+};
+document.getElementById("julia_undo").onclick = function(){
+    julia_plot_tracker.go_back();
+    set_button_colors(
+        julia_plot_tracker, 
+        document.getElementById("julia_reset"), 
+        document.getElementById("julia_undo"),
+        document.getElementById("julia_redo"),
+        document.getElementById("julia_restore"));
+};
+document.getElementById("julia_redo").onclick = function(){
+    julia_plot_tracker.go_forward();
+    set_button_colors(
+        julia_plot_tracker, 
+        document.getElementById("julia_reset"), 
+        document.getElementById("julia_undo"),
+        document.getElementById("julia_redo"),
+        document.getElementById("julia_restore"));
+};
+document.getElementById("julia_restore").onclick = function(){
+    julia_plot_tracker.go_to(julia_plot_tracker.plot_history.length - 1);
+    set_button_colors(
+        julia_plot_tracker, 
+        document.getElementById("julia_reset"), 
+        document.getElementById("julia_undo"),
+        document.getElementById("julia_redo"),
+        document.getElementById("julia_restore"));
+};
 
 
 MANDELPLOT_DIV.on('plotly_relayout', 
@@ -110,7 +193,50 @@ MANDELPLOT_DIV.on('plotly_relayout',
                 return mandelbrot.calc_escape_times(zs, num_iters); });
 
         mandelplot_tracker.add_step(new_plot_cfg[0], new_plot_cfg[1]);
+        set_button_colors(
+            mandelplot_tracker,
+            document.getElementById("mandel_reset"),
+            document.getElementById("mandel_undo"),
+            document.getElementById("mandel_redo"),
+            document.getElementById("mandel_restore"));
 });
+
+document.getElementById("mandel_reset").onclick = function(){
+    mandelplot_tracker.go_to(0);
+    set_button_colors(
+        mandelplot_tracker,
+        document.getElementById("mandel_reset"),
+        document.getElementById("mandel_undo"),
+        document.getElementById("mandel_redo"),
+        document.getElementById("mandel_restore"));
+};
+document.getElementById("mandel_undo").onclick = function(){
+    mandelplot_tracker.go_back();
+    set_button_colors(
+        mandelplot_tracker,
+        document.getElementById("mandel_reset"),
+        document.getElementById("mandel_undo"),
+        document.getElementById("mandel_redo"),
+        document.getElementById("mandel_restore"));
+};
+document.getElementById("mandel_redo").onclick = function(){
+    mandelplot_tracker.go_forward();
+    set_button_colors(
+        mandelplot_tracker,
+        document.getElementById("mandel_reset"),
+        document.getElementById("mandel_undo"),
+        document.getElementById("mandel_redo"),
+        document.getElementById("mandel_restore"));
+};
+document.getElementById("mandel_restore").onclick = function(){
+    mandelplot_tracker.go_to(mandelplot_tracker.length - 1);
+    set_button_colors(
+        mandelplot_tracker,
+        document.getElementById("mandel_reset"),
+        document.getElementById("mandel_undo"),
+        document.getElementById("mandel_redo"),
+        document.getElementById("mandel_restore"));
+};
 
 
 MANDELPLOT_DIV.on('plotly_click',
@@ -129,6 +255,12 @@ function(eventdata){
     var new_plot_cfg = on_c_change(c);
     julia_plot_tracker.wipe_history();
     julia_plot_tracker.add_step(new_plot_cfg[0], new_plot_cfg[1]);
+    set_button_colors(
+        julia_plot_tracker, 
+        document.getElementById("julia_reset"), 
+        document.getElementById("julia_undo"),
+        document.getElementById("julia_redo"),
+        document.getElementById("julia_restore"));
 });
 
 
@@ -143,12 +275,24 @@ function(eventdata){
     var default_layout = gen_layout(xs=DEFAULT_X, ys=DEFAULT_Y);
 
     julia_plot_tracker.add_step(default_julia_config, default_layout);
-
+    set_button_colors(
+        julia_plot_tracker, 
+        document.getElementById("julia_reset"), 
+        document.getElementById("julia_undo"),
+        document.getElementById("julia_redo"),
+        document.getElementById("julia_restore"));
+        
     // generate default Mandelplot
     var c_vals = gen_z_vals(DEFAULT_Y, DEFAULT_X);
     var mandel_times = mandelbrot.calc_escape_times(c_vals, num_iters);
     var default_mandel_config = gen_structure(DEFAULT_X, DEFAULT_Y, mandel_times);
     mandelplot_tracker.add_step(default_mandel_config, default_layout);
+    set_button_colors(
+        mandelplot_tracker,
+        document.getElementById("mandel_reset"),
+        document.getElementById("mandel_undo"),
+        document.getElementById("mandel_redo"),
+        document.getElementById("mandel_restore"));
 
 })();
 
